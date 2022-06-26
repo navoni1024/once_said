@@ -16,33 +16,6 @@ for filename in os.listdir('./cogs'):
 @bot.event
 async def on_ready():
 	print('\ONCE_SAID ON/')
-	
-@bot.command()
-async def load(ctx, cog_name):
-	try:
-		bot.load_extension(f'cogs.{cog_name}')
-	except:
-		await ctx.send('Failed.')
-		return
-	await ctx.send('load success!')
-
-@bot.command()
-async def unload(ctx, cog_name):
-	try:
-		bot.unload_extension(f'cogs.{cog_name}')
-	except:
-		await ctx.send('Failed.')
-		return
-	await ctx.send('unload success!')
-
-@bot.command()
-async def reload(ctx, cog_name):
-	try:
-		bot.reload_extension(f'cogs.{cog_name}')
-	except:
-		await ctx.send('Failed.')
-		return
-	await ctx.send('reload success!')
 
 if __name__ == "__main__":
 	bot.run(jdata['token'])
