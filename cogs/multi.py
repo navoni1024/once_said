@@ -2,7 +2,7 @@ import discord
 import json
 from discord.ext import commands
 from core.classes import Cog_Extension
-from core.search_message import search_message, stDate
+from core.search_message import search_message
 
 with open('setting.json','r',encoding='utf8') as jfile:
 	jdata = json.load(jfile)
@@ -17,9 +17,8 @@ class multi(Cog_Extension):
 			await message.channel.send("?")
 			return
 		await message.channel.send("正如同底下這段對話所表達的:")
-		startDate = await stDate(message)
 		for i in range(num):
-			msg = await search_message(message, startDate, attachBool=False, htmlBool=False)
+			msg = await search_message(message, attachBool=False, htmlBool=False)
 			if(len(msg.attachments)<=0):
 				await message.channel.send('"'+msg.content+'"')
 			else:

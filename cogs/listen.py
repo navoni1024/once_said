@@ -2,7 +2,7 @@ import discord
 import json
 from discord.ext import commands
 from core.classes import Cog_Extension
-from core.search_message import search_message, stDate
+from core.search_message import search_message
 
 with open('setting.json','r',encoding='utf8') as jfile:
 	jdata = json.load(jfile)
@@ -11,10 +11,8 @@ class listen(Cog_Extension):
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		if(message.author.bot): return
-		botID = jdata['botID']
-		startDate = await stDate(message)
-		if(message.content == botID[0] or message.content == botID[1]):
-			msg = await search_message(message, startDate, htmlBool=False)
+		if (self.bot.user in message.mentions):
+			msg = await search_message(message, htmlBool=False)
 		else:
 			return
 		header = "正如同**"+str(msg.author.name)+"**曾經"
