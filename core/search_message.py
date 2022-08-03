@@ -13,15 +13,21 @@ async def randomDate(message):
 	o_message = await message.channel.history(limit=1, after=o_time, oldest_first=True).flatten()
 	stTime = o_message[0].created_at
 	start = int(stTime.timestamp())
+
+	#Royal Repair Hotline (RRH)/normal SP random
+	if(message.channel.id == 704152750979678280):
+		start = random.choices([1611820000, 1624970000], weights=(1,99))
+		start = int(start[0])
+
 	end = int(time.time())
 	t = random.randint(start, end)
 	return datetime.datetime.fromtimestamp(t)	
 
-async def search_message(message, attachBool=True, htmlBool=True):
+async def search_message(message, botID, attachBool=True, htmlBool=True):
 	msg_list = []
-	async for i in message.channel.history(limit=100, after= await randomDate(message)):
+	async for i in message.channel.history(limit=50, after= await randomDate(message)):
 		if(not(i.author.bot)):
-			if(i.content!="" or len(i.attachments)>0):
+			if((i.content!="" or len(i.attachments)>0) and botID not in i.raw_mentions):
 				if(not(len(i.attachments)>0 and not(attachBool))):
 					if(not(i.content.startswith('http') and not(htmlBool))):
 						msg_list.append(i)

@@ -11,8 +11,8 @@ class listen(Cog_Extension):
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		if(message.author.bot): return
-		if (self.bot.user in message.mentions):
-			msg = await search_message(message, htmlBool=False)
+		if (self.bot.user.id in message.raw_mentions):
+			msg = await search_message(message, botID=self.bot.user.id, htmlBool=False)
 		else:
 			return
 		header = "正如同**"+str(msg.author.name)+"**曾經"

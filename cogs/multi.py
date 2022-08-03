@@ -18,7 +18,7 @@ class multi(Cog_Extension):
 			return
 		await message.channel.send("正如同底下這段對話所表達的:")
 		for i in range(num):
-			msg = await search_message(message, attachBool=False, htmlBool=False)
+			msg = await search_message(message, botID=self.bot.user.id, attachBool=False, htmlBool=False)
 			if(len(msg.attachments)<=0):
 				await message.channel.send('"'+msg.content+'"')
 			else:
