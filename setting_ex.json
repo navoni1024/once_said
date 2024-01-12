@@ -1,0 +1,10 @@
+{
+	"token":"[token]",
+	"prefix":"-",
+	"botID":[
+		"<@![ID]>",
+		"<@[ID]>"
+	],
+	"photoLimit":3,
+	"mLimit":6
+}
