@@ -56,7 +56,6 @@ async def search_message(message, botID, attachBool=True, htmlBool=True):
 		return msg_list[random.randint(0, len(msg_list)-1)]
 	except:
 		await message.channel.send(chosenChannel.name+" - Random failed")
-
 		return "Random failed"
 
 
