@@ -13,6 +13,8 @@ class listen(Cog_Extension):
 		if(message.author.bot): return
 		if (self.bot.user.id in message.raw_mentions):
 			msg = await search_message(message, botID=self.bot.user.id, htmlBool=False)
+			if(msg=="Random failed"):
+				return
 		else:
 			return
 		header = "正如同**"+str(msg.author.name)+"**曾經"
@@ -27,6 +29,7 @@ class listen(Cog_Extension):
 			await message.channel.send(attachment.url)
 			photoLimit-=1
 			if(photoLimit<=0): break
+
 
 def setup(bot):
 	bot.add_cog(listen(bot))

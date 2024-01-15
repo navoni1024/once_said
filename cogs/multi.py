@@ -17,13 +17,21 @@ class multi(Cog_Extension):
 			await message.channel.send("?")
 			return
 		await message.channel.send("正如同底下這段對話所表達的:")
+
+		resultMsg = ""
+		
 		for i in range(num):
 			msg = await search_message(message, botID=self.bot.user.id, attachBool=False, htmlBool=False)
+			if(msg=="Random failed"):
+				continue
 			if(len(msg.attachments)<=0):
-				await message.channel.send('"'+msg.content+'"')
+				resultMsg+='"'+msg.content+'"\n'
 			else:
 				i=msg.attachments[0]
-				await message.channel.send(i.url)
+				resultMsg+=i.url+'\n'
+
+		await message.channel.send(resultMsg)
+
 def setup(bot):
 	bot.add_cog(multi(bot))
 
