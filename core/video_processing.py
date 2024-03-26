@@ -1,8 +1,6 @@
 import cv2
 import random
 import os
-import tempfile
-
 
 def random_file(folder_path):
     files = os.listdir(folder_path)

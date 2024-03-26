@@ -1,3 +1,5 @@
+import cv2
+import tempfile
 import discord
 import json
 import tempfile
@@ -16,7 +18,7 @@ class mygo(Cog_Extension):
         temp_file = tempfile.mkstemp(suffix=".jpg")
         cv2.imwrite(temp_file[1], frame)
         await message.channel.send(file=discord.File(temp_file[1]))
-
+        
 
 def setup(bot):
 	bot.add_cog(mygo(bot))
