@@ -3,31 +3,14 @@ import json
 import time
 import random
 import datetime
+import os
 from discord.ext import commands
-
-with open('setting.json','r',encoding='utf8') as jfile:
-	jdata = json.load(jfile)
-
-with open('blacklist.json','r',encoding='utf8') as jfile:
-	channelBlacklist = json.load(jfile)
-
-async def randomChannel(message):
-	channelList = []
-	for i in message.guild.text_channels:
-		channelList.append(i.id)
-
-	for i in list(channelBlacklist.values()):
-		try:
-			channelList.remove(i)
-		except:
-			print("skip: "+str(i))
-	
-	r = random.randint(0, len(channelList)-1)
-	return discord.utils.get(message.guild.text_channels, id=channelList[r])
+from core.search_channel import randomChannel
 
 async def randomDate(channel):
 	o_time = channel.created_at
-	o_message = await channel.history(limit=1, after=o_time, oldest_first=True).flatten()
+	o_message = [message async for message in channel.history(limit=1, after=o_time, oldest_first=True)]
+
 	stTime = o_message[0].created_at
 	start = int(stTime.timestamp())
 
@@ -36,9 +19,9 @@ async def randomDate(channel):
 		start = random.choices([1611820000, 1624970000], weights=(1,99))
 		start = int(start[0])
 
-	finalMessage = await channel.history(limit=1, after=o_time, oldest_first=True).flatten()
+	finalMessage = [message async for message in channel.history(limit=1)]
 	end = int(finalMessage[0].created_at.timestamp())
-	
+
 	t = random.randint(start, end)
 	return datetime.datetime.fromtimestamp(t)	
 
@@ -57,7 +40,12 @@ async def search_message(message, botID, attachBool=True, htmlBool=True):
 	except:
 		await message.channel.send(chosenChannel.name+" - Random failed")
 		return "Random failed"
+	
+async def remove_mentions(message):
+	mentions = message.mentions
+	final_str = message.content
 
-
-
-
+	for mention in mentions:
+		final_str = final_str.replace(mention.mention, mention.name)
+	
+	return final_str

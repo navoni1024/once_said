@@ -1,11 +1,7 @@
-from inspect import Parameter
-import discord
-import json
-from discord.ext import commands
 import requests
 
-def cwb(location):
-	url = "https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/F-C0032-005?Authorization=CWB-8AA5A698-DA03-45A2-81E9-F45E7A8EABEF&downloadType=WEB&format=JSON"
+def cwb(location, API_KEY):
+	url = f"https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/F-C0032-005?Authorization={API_KEY}&downloadType=WEB&format=JSON"
 	orgData = requests.get(url)
 	data = orgData.json()
 
