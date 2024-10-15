@@ -10,7 +10,7 @@ async def load_extensions():
 			await bot.load_extension(f'cogs.{filename[:-3]}')
 	await bot.start(jdata['token'])
 
-with open('setting_test.json','r',encoding='utf8') as jfile:
+with open('setting.json','r',encoding='utf8') as jfile:
 	jdata = json.load(jfile)
 
 intents = discord.Intents.default()
