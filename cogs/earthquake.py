@@ -11,9 +11,12 @@ class earthquake(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.settings = bot.settings
-        self.LastQuack = {}
+        self.LastQuack = None
         self.QuackCh = None
-        self.url = f"https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0015-001?Authorization={self.settings['API_KEY']}&limit=1"
+
+        self.SmallQuackURL = self.settings["small_felt_area_quake_url"].replace("API_KEY", self.settings["API_KEY"])
+        self.RemarkableQuackURL = self.settings["small_felt_area_quake_url"].replace("API_KEY", self.settings["API_KEY"])
+
         self.detector.start()
 
     def cog_unload(self):
@@ -21,25 +24,42 @@ class earthquake(commands.Cog):
 
     @tasks.loop(seconds=30)
     async def detector(self):
-        res = requests.get(self.url, headers={'accept':'application/json'})
-        QuackData = res.json()
-        if(self.LastQuack['EarthquakeNo'] != QuackData['records']['Earthquake'][0]['EarthquakeNo']):
+        res = requests.get(self.SmallQuackURL, headers={'accept':'application/json'})      
+        SmallQuackData = res.json()
+
+        res = requests.get(self.RemarkableQuackURL, headers={'accept':'application/json'})      
+        RemarkableQuackData = res.json()
+       
+        if(self.LastQuack['EarthquakeNo'] != SmallQuackData['records']['Earthquake'][0]['EarthquakeNo'] and self.LastQuack['EarthquakeNo'] != RemarkableQuackData['records']['Earthquake'][0]['EarthquakeNo']):
+            if(SmallQuackData['records']['Earthquake'][0]['EarthquakeNo'] > RemarkableQuackData['records']['Earthquake'][0]['EarthquakeNo']):
+                self.LastQuack = SmallQuackData['records']['Earthquake'][0]
+            else:
+                self.LastQuack = RemarkableQuackData['records']['Earthquake'][0]
+        
             await self.QuackCh.send(PicURL)
             await self.QuackCh.send(pack_quack_info(self.LastQuack))
             await self.QuackCh.send(self.LastQuack['ReportImageURI'])
-            self.LastQuack = QuackData['records']['Earthquake'][0]
-         
+                   
     @detector.before_loop
-    async def before_detector(self):     
-        res = requests.get(self.url, headers={'accept':'application/json'})
-        QuackData = res.json()
-        self.LastQuack = QuackData['records']['Earthquake'][0]
-        
+    async def before_detector(self):
+        await self.bot.wait_until_ready()  
+        res = requests.get(self.SmallQuackURL, headers={'accept':'application/json'})      
+        SmallQuackData = res.json()
+
+        res = requests.get(self.RemarkableQuackURL, headers={'accept':'application/json'})      
+        RemarkableQuackData = res.json()
+               
+        if(SmallQuackData['records']['Earthquake'][0]['EarthquakeNo'] > RemarkableQuackData['records']['Earthquake'][0]['EarthquakeNo']):
+            self.LastQuack = SmallQuackData['records']['Earthquake'][0]
+        else:
+            self.LastQuack = RemarkableQuackData['records']['Earthquake'][0]
+
+        self.QuackCh = self.QuackCh = self.bot.get_channel(self.settings["earthquake_channel"])
 
     @commands.command(aliases=['test'])
-    async def test_earthquake(self, message):
-        #self.QuackCh = self.bot.get_channel(jdata["earthquake_channel"])
-        self.QuackCh = message.channel
+    async def test_earthquake(self, ctx):
+        #QuackCh = self.bot.get_channel(self.settings["earthquake_channel"])
+        #self.QuackCh = ctx.channel
         await self.QuackCh.send(PicURL)
         await self.QuackCh.send(pack_quack_info(self.LastQuack))
         await self.QuackCh.send(self.LastQuack['ReportImageURI'])
