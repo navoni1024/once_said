@@ -34,11 +34,12 @@ def cwb(location, url):
 
 	return result
 
-"""
-def req_quake_report():
-	pass
+def req_quake_report(url):
+	res = requests.get(url, headers={'accept':'application/json'})      
+	quackData = res.json()
+	return quackData['records']['Earthquake'][0]
+
 
 def pack_quake_info():
 	pass
 
-"""
