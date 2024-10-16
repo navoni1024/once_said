@@ -17,19 +17,26 @@ async def load_extensions():
 
 
 intents = discord.Intents.default()
-intents.members = True
+intents.messages = True
+intents.message_content = True
 
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 discord.utils.setup_logging(handler=handler)
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(jdata['prefix']), intents=intents)
+bot = commands.Bot(commands.when_mentioned_or("peko"), intents=intents)
 bot.settings = jdata
-
-asyncio.run(load_extensions())
 
 @bot.event
 async def on_ready():
 	print('\\ONCE_SAID ON/')
+
+@bot.command()
+async def MUR(ctx):
+    await ctx.send("Test command is working!")
+
+asyncio.run(load_extensions())
+
+
 
 """
 if __name__ == "__main__":

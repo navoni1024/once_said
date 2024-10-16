@@ -10,28 +10,28 @@ class zhang(commands.Cog):
         self.settings = bot.settings
 
     @commands.command(aliases=['z'])
-    async def zhang(self, message):
+    async def zhang(self, ctx):
         vid = self.settings["zhang_path"]
         temp_file = tempfile.mkstemp(suffix=".png")
         random_frame(vid, temp_file[1])
-        await message.channel.send(file=discord.File(temp_file[1]))
+        await ctx.channel.send(file=discord.File(temp_file[1]))
         os.close(temp_file[0])
         os.unlink(temp_file[1])
 
     @commands.command(aliases=['zG', 'zg'])
-    async def zhang_gif(self, message, duration=3.0):
+    async def zhang_gif(self, ctx, duration=3.0):
         if(duration <= 0):
-            await message.channel.send("The requested GIF length is invalid")
+            await ctx.channel.send("The requested GIF length is invalid")
             return
         if(duration > self.settings['gif_duration_limit']):
-            await message.channel.send("The requested GIF length is too long")
+            await ctx.channel.send("The requested GIF length is too long")
             return
         
-        hint = await message.channel.send("generating...")
+        hint = await ctx.channel.send("generating...")
         vid = self.settings["zhang_path"]
         temp_file = tempfile.mkstemp(suffix=".gif")
         random_gif(vid, temp_file[1], duration)
-        await message.channel.send(file=discord.File(temp_file[1]))
+        await ctx.channel.send(file=discord.File(temp_file[1]))
         os.close(temp_file[0])
         os.unlink(temp_file[1])
         await hint.delete()   
