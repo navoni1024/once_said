@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 from discord.ext import commands, tasks
 from core.cwb import req_quake_report
 
@@ -7,6 +8,9 @@ PicURL = "https://cdn.discordapp.com/attachments/1082051109532749974/12907699891
 def pack_quack_info(QuackData):
     info = f"[地震速報 Earthquake Alert] {QuackData['ReportContent']}"
     return info
+
+def parse_time(time_str):
+    return datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
 
 class earthquake(commands.Cog):
     def __init__(self, bot):
@@ -23,15 +27,21 @@ class earthquake(commands.Cog):
     def cog_unload(self):
         self.detector.cancel()
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=15)
     async def detector(self):
         SmallQuackData = req_quake_report(self.SmallQuackURL)
         RemarkableQuackData = req_quake_report(self.RemarkableQuackURL)
        
-        if(SmallQuackData['EarthquakeNo'] > RemarkableQuackData['EarthquakeNo']):
-            self.LastQuack = SmallQuackData
+        if(parse_time(SmallQuackData['EarthquakeInfo']['OriginTime']) > parse_time(RemarkableQuackData['EarthquakeInfo']['OriginTime'])):
+            NewQuack = SmallQuackData
         else:
-            self.LastQuack = RemarkableQuackData
+            NewQuack = RemarkableQuackData
+
+        if(parse_time(NewQuack['EarthquakeInfo']['OriginTime']) > parse_time(self.LastQuack['EarthquakeInfo']['OriginTime'])):
+            self.LastQuack = NewQuack
+            await self.QuackCh.send(PicURL)
+            await self.QuackCh.send(pack_quack_info(self.LastQuack))
+            await self.QuackCh.send(self.LastQuack['ReportImageURI'])
 
                    
     @detector.before_loop
@@ -39,7 +49,7 @@ class earthquake(commands.Cog):
         SmallQuackData = req_quake_report(self.SmallQuackURL)
         RemarkableQuackData = req_quake_report(self.RemarkableQuackURL)
        
-        if(SmallQuackData['EarthquakeNo'] > RemarkableQuackData['EarthquakeNo']):
+        if(parse_time(SmallQuackData['EarthquakeInfo']['OriginTime']) > parse_time(RemarkableQuackData['EarthquakeInfo']['OriginTime'])):
             self.LastQuack = SmallQuackData
         else:
             self.LastQuack = RemarkableQuackData
