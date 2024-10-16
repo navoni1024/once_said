@@ -46,6 +46,6 @@ async def remove_mentions(message):
 	final_str = message.content
 
 	for mention in mentions:
-		final_str = final_str.replace(mention.mention, mention.name)
+		final_str = final_str.replace(mention.mention, '@'+mention.name)
 	
 	return final_str

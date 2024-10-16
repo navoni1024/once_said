@@ -1,16 +1,16 @@
 from discord.ext import commands
 from core.search_message import search_message, remove_mentions
 
-class randomMessage(commands.Cog):
+class randomctx(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.settings = bot.settings
 
 	@commands.Cog.listener()
-	async def on_message(self, message):
-		if(message.author.bot): return
-		if('<@'+str(self.bot.user.id)+'>' == message.content):
-			msg = await search_message(message, botID=self.bot.user.id, htmlBool=False)
+	async def on_message(self, ctx):
+		if(ctx.author.bot): return
+		if('<@'+str(self.bot.user.id)+'>' == ctx.content):
+			msg = await search_message(ctx, botID=self.bot.user.id, htmlBool=False)
 			if(msg=="Random failed"):
 				return
 			else:
@@ -19,29 +19,29 @@ class randomMessage(commands.Cog):
 				if(msg.content!="" and len(msg.attachments)>0): header += "和"
 				if(len(msg.attachments)>0): header+="傳過"
 				header += "的"
-				await message.channel.send(header)
+				await ctx.channel.send(header)
 				tmp = await remove_mentions(msg)
-				if(msg.content!=""): await message.channel.send('"'+tmp+'"')
+				if(msg.content!=""): await ctx.channel.send('"'+tmp+'"')
 				photoLimit = self.settings['photoLimit']
 				for attachment in msg.attachments:
-					await message.channel.send(attachment.url)
+					await ctx.channel.send(attachment.url)
 					photoLimit-=1
 					if(photoLimit<=0): break
 
 	@commands.command(aliases=['miko'])
-	async def m(self, message, num=4):
+	async def m(self, ctx, num=4):
 		if(num > self.settings['mLimit']):
-			await message.channel.send("Too much")
+			await ctx.channel.send("Too much")
 			return
 		if(num < 1):
-			await message.channel.send("?")
+			await ctx.channel.send("?")
 			return
-		await message.channel.send("正如同底下這段對話所表達的:")
+		await ctx.channel.send("正如同底下這段對話所表達的:")
 
 		resultMsg = ""
 		
 		for i in range(num):
-			msg = await search_message(message, botID=self.bot.user.id, attachBool=False, htmlBool=False)
+			msg = await search_message(ctx, botID=self.bot.user.id, attachBool=False, htmlBool=False)
 			if(msg=="Random failed"):
 				continue
 			if(len(msg.attachments)<=0):
@@ -51,10 +51,10 @@ class randomMessage(commands.Cog):
 				i=msg.attachments[0]
 				resultMsg+=i.url+'\n'
 
-		await message.channel.send(resultMsg)
+		await ctx.channel.send(resultMsg)
 		
 
 async def setup(bot):
-	await bot.add_cog(randomMessage(bot))
+	await bot.add_cog(randomctx(bot))
 
 
