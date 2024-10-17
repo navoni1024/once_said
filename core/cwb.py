@@ -20,18 +20,25 @@ def cwb(location, url):
 	if(forecast == None):
 		return "dafaq"
 	
-	
-	result="**"+forecast["locationName"]
-	result+= '**\n'
-	result+= forecast["weatherElement"][0]["time"][2]["startTime"][:10]+' '
-	result+= forecast["weatherElement"][0]["time"][2]["startTime"][11:16]
-	result+= ' ~ '
-	result+= forecast["weatherElement"][0]["time"][2]["endTime"][:10]+' '
-	result+= forecast["weatherElement"][0]["time"][2]["endTime"][11:16]
-	result+= '\n'
-	result+= forecast["weatherElement"][0]["time"][2]["parameter"]["parameterName"]+' '
-	result+= forecast["weatherElement"][1]["time"][2]["parameter"]["parameterName"]+"°C "
+	location = forecast["locationName"]
+	result = f"**{location}**"
 
+	for i in range(3):
+		start_time = forecast["weatherElement"][0]["time"][i]["startTime"]
+		end_time = forecast["weatherElement"][0]["time"][i]["endTime"]
+		weather = forecast["weatherElement"][0]["time"][i]["parameter"]["parameterName"]
+		pop = forecast["weatherElement"][1]["time"][i]["parameter"]["parameterName"] + "%"
+		min_temp = forecast["weatherElement"][2]["time"][i]["parameter"]["parameterName"] + "°C"
+		max_temp = forecast["weatherElement"][4]["time"][i]["parameter"]["parameterName"] + "°C"
+		feel = forecast["weatherElement"][3]["time"][i]["parameter"]["parameterName"]
+
+		result += f"\n{start_time} 至 {end_time}\n"
+		result += f"    天氣狀況：{weather}\n"
+		result += f"    降雨機率：{pop}\n"
+		result += f"    最低溫度：{min_temp}\n"
+		result += f"    最高溫度：{max_temp}\n"
+		result += f"    體感：{feel}\n"
+    
 	return result
 
 def req_quake_report(url):
