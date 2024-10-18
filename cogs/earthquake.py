@@ -1,13 +1,26 @@
 import requests
+import os
+import discord
 from datetime import datetime
 from discord.ext import commands, tasks
 from core.cwb import req_quake_report
 
-PicURL = "https://cdn.discordapp.com/attachments/1082051109532749974/1290769989112168509/image0-9.gif?ex=670247fa&is=6700f67a&hm=2038b2a2e403dd4e477ed593f45283ed39d46f39e7ac53322d5701d80b8713b3&"
+PicDict = "./asset/"
 
-def pack_quack_info(QuackData):
+async def send_quack_info(QuackData, QuackCh):
+
+    pic = os.path.join(PicDict, "sweetCamper.gif")
+    
+    if("花蓮" in QuackData["EarthquakeInfo"]["Epicenter"]["Location"]):
+        pic = os.path.join(PicDict, "Hua_king.jpg")
+    
+    pic = discord.File(pic)
     info = f"[地震速報 Earthquake Alert] {QuackData['ReportContent']}"
-    return info
+
+    await QuackCh.send(file=pic)
+    await QuackCh.send(info)
+    await QuackCh.send(QuackData['ReportImageURI'])
+    
 
 def parse_time(time_str):
     return datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
@@ -39,10 +52,7 @@ class earthquake(commands.Cog):
 
         if(parse_time(NewQuack['EarthquakeInfo']['OriginTime']) > parse_time(self.LastQuack['EarthquakeInfo']['OriginTime'])):
             self.LastQuack = NewQuack
-            await self.QuackCh.send(PicURL)
-            await self.QuackCh.send(pack_quack_info(self.LastQuack))
-            await self.QuackCh.send(self.LastQuack['ReportImageURI'])
-
+            await send_quack_info(self.LastQuack, self.QuackCh)
                    
     @detector.before_loop
     async def before_detector(self):
@@ -63,10 +73,7 @@ class earthquake(commands.Cog):
         #QuackCh = self.bot.get_channel(self.settings["earthquake_channel"])
         #self.QuackCh = ctx.channel
         await self.bot.wait_until_ready()
-        await self.QuackCh.send(PicURL)
-        await self.QuackCh.send(pack_quack_info(self.LastQuack))
-        await self.QuackCh.send(self.LastQuack['ReportImageURI'])
-		
+        await send_quack_info(self.LastQuack, self.QuackCh)
 
 async def setup(bot):
 	await bot.add_cog(earthquake(bot))
