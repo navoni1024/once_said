@@ -1,7 +1,7 @@
 from discord.ext import commands
 from core.search_message import search_message, remove_mentions
 
-class randomctx(commands.Cog):
+class randomMessage(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.settings = bot.settings
@@ -55,6 +55,6 @@ class randomctx(commands.Cog):
 		
 
 async def setup(bot):
-	await bot.add_cog(randomctx(bot))
+	await bot.add_cog(randomMessage(bot))
 
 
