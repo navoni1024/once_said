@@ -14,8 +14,6 @@ async def load_extensions():
 			await bot.load_extension(f'cogs.{filename[:-3]}')
 	await bot.start(jdata['token'])
 
-
-
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True

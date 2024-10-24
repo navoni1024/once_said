@@ -4,11 +4,27 @@ import discord
 import tempfile
 from io import BytesIO
 from PIL import Image
-from datetime import datetime
 from discord.ext import commands, tasks
-from core.cwb import req_quake_report, image_composite
+from core.cwb import req_quake_report, parse_time
 
 PicDict = "./asset/"
+
+def image_composite(base_image, overlay, output_path):
+
+	if not isinstance(base_image, Image.Image):
+		base_image = Image.open(base_image)
+	if not isinstance(overlay, Image.Image):
+		overlay = Image.open(overlay)
+
+	max_size = (200, 400)
+	coord = (688-10, 866-10)
+
+	overlay.thumbnail(max_size)
+	overlay_width, overlay_height = overlay.size
+	position = (coord[0] - overlay_width, coord[1] - overlay_height)
+
+	base_image.paste(overlay, position)  
+	base_image.save(output_path)
 
 async def send_quack_info(QuackData, QuackCh):
 
@@ -22,8 +38,8 @@ async def send_quack_info(QuackData, QuackCh):
         image_composite(ReprotImage, os.path.join(PicDict, "Hua_king.jpg"), temp_file[1])
         ReprotImage = discord.File(temp_file[1])
         
-        await QuackCh.send(file=ReprotImage)
         await QuackCh.send(info)
+        await QuackCh.send(file=ReprotImage)
         os.close(temp_file[0])
         os.unlink(temp_file[1])
     
@@ -36,9 +52,6 @@ async def send_quack_info(QuackData, QuackCh):
         os.close(temp_file[0])
         os.unlink(temp_file[1])
 
-def parse_time(time_str):
-    return datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
-
 class earthquake(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -47,7 +60,7 @@ class earthquake(commands.Cog):
         self.QuackCh = None
 
         self.SmallQuackURL = self.settings["small_felt_area_quake_url"].replace("API_KEY", self.settings["API_KEY"])
-        self.RemarkableQuackURL = self.settings["small_felt_area_quake_url"].replace("API_KEY", self.settings["API_KEY"])
+        self.RemarkableQuackURL = self.settings["remarkable_earthquake_url"].replace("API_KEY", self.settings["API_KEY"])
 
         self.detector.start()
 

@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 from PIL import Image
 
 def cwb(location, url):
@@ -47,22 +48,6 @@ def req_quake_report(url):
 	quackData = res.json()
 	return quackData['records']['Earthquake'][0]
 
-def image_composite(base_image, overlay, output_path):
+def parse_time(time_str):
+    return datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
 
-	if not isinstance(base_image, Image.Image):
-		base_image = Image.open(base_image)
-
-	if not isinstance(overlay, Image.Image):
-		overlay = Image.open(overlay)
-
-	max_size = (200, 400)
-	coord = (688-10, 866-10)
-
-	overlay.thumbnail(max_size)
-
-	overlay_width, overlay_height = overlay.size
-	position = (coord[0] - overlay_width, coord[1] - overlay_height)
-
-	base_image.paste(overlay, position)  
-
-	base_image.save(output_path)
