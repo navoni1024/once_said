@@ -5,7 +5,7 @@ import os
 import asyncio
 import logging
 
-with open('setting_test.json','r',encoding='utf8') as jfile:
+with open('setting.json','r',encoding='utf8') as jfile:
 	jdata = json.load(jfile)
 
 async def load_extensions():
