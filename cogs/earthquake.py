@@ -63,6 +63,16 @@ async def send_quack_info(QuackData, QuackCh):
         os.close(temp_file[0])
         os.unlink(temp_file[1])
 
+    elif("台東" in QuackData["EarthquakeInfo"]["Epicenter"]["Location"]):    
+        temp_file = tempfile.mkstemp(suffix=".png")
+        image_composite(ReprotImage, os.path.join(PicDict, "Xiaomi_9.png"), temp_file[1])
+        ReprotImage = discord.File(temp_file[1])
+        
+        await QuackCh.send(info)
+        await QuackCh.send(file=ReprotImage)
+        os.close(temp_file[0])
+        os.unlink(temp_file[1])
+
     else:
         temp_file = tempfile.mkstemp(suffix=".png")
         ReprotImage.save(temp_file[1])
