@@ -9,22 +9,26 @@ from core.cwb import req_quake_report, parse_time
 
 PicDict = "./asset/"
 
-def image_composite(base_image, overlay, output_path):
+def image_composite(base_image, overlay, output_path, position='right'):
 
-	if not isinstance(base_image, Image.Image):
-		base_image = Image.open(base_image)
-	if not isinstance(overlay, Image.Image):
-		overlay = Image.open(overlay)
+    if not isinstance(base_image, Image.Image):
+        base_image = Image.open(base_image)
+    if not isinstance(overlay, Image.Image):
+        overlay = Image.open(overlay)
 
-	max_size = (200, 400)
-	coord = (688-10, 866-10)
+    max_size = (200, 400)
+    coord = (688-10, 866-10)
 
-	overlay.thumbnail(max_size)
-	overlay_width, overlay_height = overlay.size
-	position = (coord[0] - overlay_width, coord[1] - overlay_height)
+    if(position=='left'):
+        max_size = (150, 200)
+        coord = (60, 570)
 
-	base_image.paste(overlay, position)  
-	base_image.save(output_path)
+    overlay.thumbnail(max_size)
+    overlay_width, overlay_height = overlay.size
+    position = (coord[0] - overlay_width, coord[1] - overlay_height)
+
+    base_image.paste(overlay, position)  
+    base_image.save(output_path)
 
 async def send_quack_info(QuackData, QuackCh):
 
@@ -35,7 +39,12 @@ async def send_quack_info(QuackData, QuackCh):
     
     if("花蓮" in QuackData["EarthquakeInfo"]["Epicenter"]["Location"]):    
         temp_file = tempfile.mkstemp(suffix=".png")
-        image_composite(ReprotImage, os.path.join(PicDict, "Hua_king.jpg"), temp_file[1])
+
+        if(int(QuackData["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]) >= 5):
+            image_composite(ReprotImage, os.path.join(PicDict, "Hua_king.jpg"), temp_file[1])
+        else:
+            image_composite(ReprotImage, os.path.join(PicDict, "Hua_king2.jpg"), temp_file[1])
+
         ReprotImage = discord.File(temp_file[1])
         
         await QuackCh.send(info)
