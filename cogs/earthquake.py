@@ -43,7 +43,7 @@ async def send_quack_info(QuackData, QuackCh):
         if(int(QuackData["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]) >= 5):
             image_composite(ReprotImage, os.path.join(PicDict, "Hua_king.jpg"), temp_file[1])
         else:
-            image_composite(ReprotImage, os.path.join(PicDict, "Hua_king2.jpg"), temp_file[1])
+            image_composite(ReprotImage, os.path.join(PicDict, "Hua_king_2.jpg"), temp_file[1])
 
         ReprotImage = discord.File(temp_file[1])
         
